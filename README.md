@@ -18,8 +18,6 @@ demo alongside the batch path.
 
 ## Architecture
 
-_Diagram goes here — see `docs/architecture.png` (or paste a Mermaid diagram)._
-
 **Batch path:** Kaggle CSVs → Bronze Delta (raw + audit columns) → Silver
 Delta (cleansed, deduped, joined) → Gold Delta (business aggregates) →
 Great Expectations validation, all orchestrated by an Airflow DAG.
@@ -46,9 +44,11 @@ with `ZORDER BY` on the date column.
 ## Repo structure
 
 ```
-notebooks/             Databricks notebooks (bronze.ipynb, silver.ipynb, gold.ipynb)
-                        — synced to Databricks via a Git folder connection
-great_expectations/     GE project (scaffolded with `great_expectations init`)
+notebooks/             Databricks notebooks (bronze.ipynb, silver.ipynb, gold.ipynb,
+                        great_expectations.ipynb) — synced to Databricks via a
+                        Git folder connection
+great_expectations/     the suite runs inside notebooks/great_expectations.ipynb against the
+                        in-cluster Spark table 
 dags/                   Astro project (scaffolded with `astro dev init`)
 kafka/                  producer.py, consumer.py
 docs/                   architecture diagram + rubric screenshots
@@ -72,7 +72,7 @@ docs/                   architecture diagram + rubric screenshots
 |---|---|
 | Bronze ingestion | Run `notebooks/bronze.ipynb` in Databricks |
 | Silver / Gold transforms | Run `notebooks/silver.ipynb` then `notebooks/gold.ipynb` |
-| Data quality checks | Run the checkpoint from `great_expectations/` |
+| Data quality checks | Run `notebooks/great_expectations.ipynb` in Databricks |
 | Airflow DAG | `astro dev start`, trigger `ecommerce_pipeline` from the UI |
 | Kafka streaming demo | `python kafka/producer.py` then `python kafka/consumer.py` |
 
