@@ -20,7 +20,10 @@ demo alongside the batch path.
 
 **Batch path:** Kaggle CSVs → Bronze Delta (raw + audit columns) → Silver
 Delta (cleansed, deduped, joined) → Gold Delta (business aggregates) →
-Great Expectations validation, all orchestrated by an Airflow DAG.
+Great Expectations validation, all orchestrated by an Airflow DAG. Airflow
+itself runs locally (Astro CLI + Docker); the Spark/Delta/GX work all
+happens in Databricks notebooks, which the DAG triggers remotely via the
+Databricks Jobs API and blocks on until each run finishes.
 
 **Streaming path** (independent of the batch DAG): a Kafka producer
 simulates order events into a Confluent Cloud topic; a consumer filters
@@ -49,7 +52,9 @@ notebooks/             Databricks notebooks (bronze.ipynb, silver.ipynb, gold.ip
                         Git folder connection
 great_expectations/     the suite runs inside notebooks/great_expectations.ipynb against the
                         in-cluster Spark table 
-dags/                   Astro project (scaffolded with `astro dev init`)
+dags/                   Astro project — dags/dags/ecommerce_pipeline_dag.py +
+                        dags/include/databricks_utils.py are hand-written;
+                        the rest of the scaffold comes from `astro dev init`
 kafka/                  producer.py, consumer.py
 docs/                   architecture diagram + rubric screenshots
 ```
@@ -59,7 +64,8 @@ docs/                   architecture diagram + rubric screenshots
 1. **Databricks**: create a workspace, connect this repo as a Git folder
    (Repos), point it at `notebooks/`.
 2. **Astro CLI**: `cd dags && astro dev init && astro dev start` (requires
-   Docker running locally).
+   Docker running locally). Needs its own `dags/.env` with
+   `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `DATABRICKS_NOTEBOOKS_ROOT`
 3. **Confluent Cloud**: create a cluster + topic `new_orders`, put the
    bootstrap server and API key in a local `.env` (see `.env.example`,
    never commit the real one).
