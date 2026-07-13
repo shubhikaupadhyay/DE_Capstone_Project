@@ -22,9 +22,9 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
-# Workspace notebook names — renamed with numeric prefixes directly in the
-# Databricks UI, so they don't match the git-tracked file names (bronze.ipynb,
-# silver.ipynb, gold.ipynb) 1:1.
+# Workspace notebook names (no .ipynb — Databricks addresses notebooks
+# without the source extension), matching the git-tracked file names in
+# ../../notebooks/.
 BRONZE_NOTEBOOK = "01_bronze"
 SILVER_NOTEBOOK = "02_silver"
 GOLD_NOTEBOOK = "03_gold"

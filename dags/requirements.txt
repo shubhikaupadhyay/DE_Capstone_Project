@@ -1,1 +1,5 @@
 # Astro Runtime includes the following pre-installed providers packages: https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
+
+# Directly imported by include/databricks_utils.py for the Jobs API calls —
+# pinned explicitly rather than relying on it as a transitive dependency.
+requests
